@@ -1,0 +1,39 @@
+# Tutorial placeholder: substitute <owner>/<repo> and <full-commit-sha> before applying.
+# This is a MANUAL example, not applied by the GitHub workflow.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quote-api
+  namespace: agentic-demo
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: quote-api
+  template:
+    metadata:
+      labels:
+        app: quote-api
+    spec:
+      containers:
+        - name: quote-api
+          image: ghcr.io/<owner>/<repo>:sha-<full-commit-sha>
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 250m, memory: 128Mi }
